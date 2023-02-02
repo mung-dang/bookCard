@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>도서 카드 기록장</title>
+</head>
+<body>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <title>도서 카드 기록장</title>
+
+        <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <script type="text/javascript">
+
+        $(document).ready(function (){
+            showReview();
+            showBest();
+        });
+
+        function blankCheck(){
+            let title = $('#book_title').val()
+            let content = $('#book_content').val()
+            if (title == ""){
+                alert('제목을 입력해주세요')
+            }else if(content == ""){
+                alert('내용을 입력해주세요')
+            }else {
+                makeReview()
+            }
+        }
+
+        function makeReview() {
+            let today = new Date();
+            let year = today.getFullYear();
+            let month = today.getMonth() + 1;
+            let date = today.getDate();
+            let hours = today.getHours();
+            let minutes = today.getMinutes();
+            let up_time = year + '. ' + month + '. ' + date + '.     ' + hours + ':' + minutes
+
+            let title = $('#book_title').val()
+            let content = $('#book_content').val()
+
+            $.ajax({
+                type: "POST",
+                url: "/review",
+                data: {title_give:title,content_give:content, time_give:up_time},
+                success: function (response) {
+                    alert(response["msg"]);
+                    window.location.reload();
+                }
+            })
+        }
+
+        function showReview() {
+            $.ajax({
+                type: "GET",
+                url: "/review",
+                data: {},
+                success: function (response) {
+                    let reviews = response['all_reviews']
+                    for (let i = 0; i < reviews.length; i++){
+                        let title = reviews[i]['title']
+                        let content = reviews[i]['content']
+                        let time = reviews[i]['time']
+
+                        let temp_html = `<div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title">${title}</h5>
+                                                <h6 class="card-subtitle mb-2 text-muted">${time}</h6>
+                                                <p class="card-text">${content}</p>
+                                            </div>
+                                        </div>`
+                        $('#card_list').append(temp_html)
+                    }
+                }
+            })
+        }
+
+        function showBest() {
+            $.ajax({
+                type: "GET",
+                url: "/best",
+                data: {},
+                success: function (response) {
+                    let books = response['all_books']
+                    for (let i = 0; i < 6; i++){
+                        let name = books[i]['name']
+                        let img = books[i]['img']
+
+                        let temp_html = `<div class="book_info">
+                                            <img src="${img}"
+                                                class="img_book">
+                                            <h7>${name}</h7>
+                                          </div>`
+                        $('#best_book_in').append(temp_html)
+                    }
+                }
+            })
+        }
+
+    </script>
+    <style>
+        .total{
+            font-family: 'Jua', sans-serif;
+        }
+        .low_page{
+            margin: 20px 50px 50px 50px;
+        }
+        .title{
+            background-image: linear-gradient(
+                rgba(0, 0, 0, 0.8),
+                rgba(0, 0, 0, 0.8)
+            ), url("../static/library.jpg");
+            width: 1874px;
+            color: white;
+            font-size: 70px;
+            padding-top: 80px;
+            padding-bottom: 70px;
+            padding-left: 90px;
+        }
+        .banner{
+            width: 1820px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .banner_card{
+            float: left;
+            margin-left: 200px;
+            margin-top: 5px;
+        }
+        .banner_book{
+            justify-content: center;
+            margin-right: 600px;
+            margin-top: 5px;
+        }
+        .high_menu{
+            clear: left;
+            width: 1820px;
+            text-align: center;
+        }
+        .make_card{
+            float: left;
+            margin-top: 10px;
+            margin-right: 30px;
+        }
+        .card_book{
+            width: 490px;
+            border: 1px solid lightgrey;
+            border-radius: 30px;
+            padding: 20px;
+            background: #FFF1EE;
+        }
+        .title_text {
+            color: black;
+        }
+        .content_text {
+            color: black;
+        }
+        .title_book{
+            width: 450px;
+            margin-top: 5px;
+        }
+        .content_book{
+            width: 450px;
+            height: 100px;
+            margin-top: 5px;
+        }
+        .up_btn{
+            display: block;
+            margin: 10px 0px 20px 210px;
+        }
+        .rank{
+            margin-right: 170px;
+        }
+        .best_book{
+            float: left;
+            width: 1200px;
+            height: 340px;
+            margin-left: 50px;
+            padding-top: 10px;
+            background: #FFF5D8;
+        }
+        .best_book_in{
+            border-radius: 10px;
+            display: table;
+        }
+        .book_info{
+            text-align: center;
+            display: table-cell;
+            padding: 5px 20px 5px 20px;
+        }
+        .img_book{
+            width: 160px;
+            height: 200px;
+            margin-bottom: 10px;
+        }
+        .low_menu{
+            clear: left;
+            background-color: black;
+        }
+        .border{
+            clear: left;
+            width: 1780px;
+            border-bottom: 1px solid lightgray;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .card_list{
+            clear: left;
+        }
+        .card{
+            float: left;
+            width: 17rem;
+            margin-bottom: 20px;
+            margin-right: 10px;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="total">
+        <h1 class="title">도서 카드 기록장</h1>
+        <div class="low_page">
+            <div class="banner">
+                <h4 class="banner_card">카드 쓰기</h4>
+                <h4 class="banner_book">추천 도서</h4>
+            </div>
+
+            <div class="border"></div>
+
+            <div class="high_menu">
+                <div class="make_card">
+                    <div class="card_book">
+                        <h5 class="title_text">책 제목</h5>
+                        <div class="input-group mb-3 title_book">
+                            <input type="text" class="form-control" placeholder="책 제목" aria-label="Username"
+                                   aria-describedby="basic-addon1" id="book_title">
+                        </div>
+                        <h7 class="content_text">남기고 싶은 말</h7>
+                        <div class="input-group mb-3 content_book">
+                        <textarea type="text" class="form-control" placeholder="책을 읽으며 기록해두고 싶었던 모든 것"
+                                  aria-label="Username"
+                                  aria-describedby="basic-addon1" id="book_content"></textarea>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="blankCheck()" class="btn btn-outline-dark up_btn">올리기</button>
+
+                </div>
+                <div class="best_book">
+                    <div>
+                        <a class="rank">1위</a>
+                        <a class="rank">2위</a>
+                        <a class="rank">3위</a>
+                        <a class="rank">4위</a>
+                        <a class="rank">5위</a>
+                        <a>6위</a>
+                    </div>
+                    <div class="best_book_in" id="best_book_in">
+                    </div>
+                </div>
+            </div>
+            <div class="low_menu">
+                <div class="border">
+                </div>
+                <div class="card_list" id="card_list">
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</body>
+</html>
+
